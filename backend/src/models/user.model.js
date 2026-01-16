@@ -23,12 +23,8 @@ const UserSchema = new mongoose.Schema({
         default: 'sewadar',
         required: true
     },
-    // Track when this ID was created
-    createdAt: { 
-        type: Date, 
-        default: Date.now 
-    }
-});
+},
+{ timestamps: true });
 
 // --- Security Logic ---
 
@@ -38,14 +34,27 @@ UserSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
         next();
     }
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    try
+    {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    }
+    catch (error)
+    {
+        next(error);
+    }
 });
 
 // 2. Password Verification Method
 // Used during Login to compare input password with database hash
 UserSchema.methods.matchPassword = async function(enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
+    try{
+        return await bcrypt.compare(enteredPassword, this.password);
+    }
+    catch(error){
+        throw new Error("Password comparison failed");
+    }
 };
 
 const User = mongoose.model('User', UserSchema);

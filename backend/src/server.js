@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import path from 'path';
+import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import connectDB from './config/db.js'; // Note the .js extension!
 
@@ -12,7 +13,6 @@ import reportRoutes from './routes/report.route.js';
 
 // 1. Config
 dotenv.config();
-connectDB();
 
 // 2. Fix __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -23,6 +23,7 @@ const app = express();
 // 3. Middleware
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 // 4. Static Folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -49,5 +50,6 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
+    connectDB();
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });

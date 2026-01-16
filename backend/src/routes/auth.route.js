@@ -1,24 +1,36 @@
 import express from 'express';
-import { loginUser, registerUser } from '../controllers/authController.js';
-import { protect } from '../middleware/authMiddleware.js';
-import { checkRole } from '../middleware/roleMiddleware.js';
+import { 
+    loginUser, 
+    registerUser, 
+    logoutUser, 
+    updateUserProfile 
+} from '../controllers/auth.controller.js';
+import { protect } from '../middleware/auth.middleware.js';
+import { checkRole } from '../middleware/checkRole.middleware.js';
 
 const router = express.Router();
 
-// @route   POST /api/auth/login
-// @desc    Auth user & get token
-// @access  Public
+// 1. Login (Public)
 router.post('/login', loginUser);
 
-// @route   POST /api/auth/create-sewadar
-// @desc    Register a new Sewadar (Guard)
-// @access  Private (Admin Only)
-// Logic: First verify token (protect), then check if user is admin (checkRole)
+// 2. Logout (Private - creates a clean audit trail)
+router.post('/logout', logoutUser);
+
+// 3. Create Sewadar (Private - Admin Only)
+// First we check if they are logged in (protect), then check if they are admin
 router.post(
     '/create-sewadar', 
     protect, 
     checkRole(['admin']), 
     registerUser
+);
+
+// 4. Update Profile (Private - Any logged in user)
+// A Sewadar can change their own password here
+router.put(
+    '/profile', 
+    protect, 
+    updateUserProfile
 );
 
 export default router;

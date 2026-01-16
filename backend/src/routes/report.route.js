@@ -1,13 +1,10 @@
 import express from 'express';
-import { getReports, getDashboardStats } from '../controllers/reportController.js';
-import { protect } from '../middleware/authMiddleware.js';
-import { checkRole } from '../middleware/roleMiddleware.js';
+import { getReports, getDashboardStats } from '../controllers/report.controller.js';
+import { protect } from '../middleware/auth.middleware.js';
+import { checkRole } from '../middleware/checkRole.middleware.js';
 
 const router = express.Router();
 
-// @route   GET /api/reports
-// @desc    Get filtered vehicle logs (Date, Type, etc.)
-// @access  Private (Admin Only)
 router.get(
     '/',
     protect,
@@ -15,9 +12,6 @@ router.get(
     getReports
 );
 
-// @route   GET /api/reports/dashboard
-// @desc    Get quick stats (Total cars today, Occupancy, etc.)
-// @access  Private (Admin Only)
 router.get(
     '/dashboard',
     protect,
