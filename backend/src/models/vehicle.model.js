@@ -1,52 +1,39 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 
-const UserSchema = new mongoose.Schema({
-    username: { 
+const VehicleSchema = new mongoose.Schema({
+    plateNumber: { 
         type: String, 
         required: true, 
-        unique: true, 
+        uppercase: true, // Auto-convert "dl4c" to "DL4C"
         trim: true 
     },
-    // The Sewadar's real name (e.g., "Ramesh Kumar") for display
-    fullName: {
-        type: String,
-        required: true
-    },
-    password: { 
+    vehicleType: { 
         type: String, 
+        enum: ['2-Wheeler', '4-Wheeler', 'Others'], 
         required: true 
     },
-    role: { 
+    phoneNumber: { 
         type: String, 
-        enum: ['admin', 'sewadar'], 
-        default: 'sewadar',
-        required: true
+        default: null,
+        trim: true 
     },
-    // Track when this ID was created
-    createdAt: { 
+    // The exact time the vehicle arrived
+    entryTime: { 
         type: Date, 
-        default: Date.now 
+        default: Date.now,
+        index: true // INDEXED: Makes generating Date-wise reports much faster
+    },
+    // Link to the Sewadar who added this vehicle (Audit trail)
+    recordedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 });
 
-// --- Security Logic ---
+// INDEXING: 
+// We index 'plateNumber' so looking up vehicle history (for auto-fill phone) is instant.
+VehicleSchema.index({ plateNumber: 1 });
 
-// 1. Password Hashing Middleware
-// Automatically encrypts password before saving to DB
-UserSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) {
-        next();
-    }
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-});
-
-// 2. Password Verification Method
-// Used during Login to compare input password with database hash
-UserSchema.methods.matchPassword = async function(enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
-};
-
-const User = mongoose.model('User', UserSchema);
-export default User;
+const Vehicle = mongoose.model('Vehicle', VehicleSchema);
+export default Vehicle;

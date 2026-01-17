@@ -1,0 +1,55 @@
+# ---------------------------------
+# 1. Security (CRITICAL)
+# ---------------------------------
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---------------------------------
+# 2. Dependencies
+# ---------------------------------
+node_modules/
+/backend/node_modules/
+/frontend/node_modules/
+
+# ---------------------------------
+# 3. Build Outputs (Frontend)
+# ---------------------------------
+dist/
+build/
+coverage/
+
+# ---------------------------------
+# 4. User Uploads & Temp Files
+# ---------------------------------
+# We ignore the actual images, but often keep the folder structure
+uploads/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.heic
+
+# ---------------------------------
+# 5. OS & IDE Junk
+# ---------------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ---------------------------------
+# 6. Legacy Python (Safety Net)
+# ---------------------------------
+# Even though you deleted Python, keep these just in case
+# someone accidentally adds them back later.
+venv/
+__pycache__/
+*.pyc
+requests.txt

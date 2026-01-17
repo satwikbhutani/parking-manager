@@ -1,20 +1,25 @@
 import express from 'express';
-import { createEntry } from '../controllers/vehicleController.js';
-import { protect } from '../middleware/authMiddleware.js';
-import { checkRole } from '../middleware/roleMiddleware.js';
-import upload from '../middleware/uploadMiddleware.js'; // Multer config
+import { scanPlate, createEntry } from '../controllers/vehicle.controller.js';
+import { protect } from '../middleware/auth.middleware.js';
+import upload from '../middleware/upload.middleware.js'; 
 
 const router = express.Router();
 
-// @route   POST /api/vehicles/entry
-// @desc    Upload photo, OCR scan, and save vehicle entry
-// @access  Private (Admin & Sewadar)
+// --- STEP 1: The "Eye" ---
+// Takes an image, returns text. Does NOT save to DB yet.
+router.post(
+    '/scan',
+    protect,
+    upload.single('platePhoto'), // Handles the file here
+    scanPlate
+);
+
+// --- STEP 2: The "Notebook" ---
+// Takes the final JSON text (after user review) and saves it.
 router.post(
     '/entry',
     protect,
-    checkRole(['admin', 'sewadar']), // Both roles can do this
-    upload.single('platePhoto'),     // Handle the file upload before controller
-    createEntry
+    createEntry 
 );
 
 export default router;
