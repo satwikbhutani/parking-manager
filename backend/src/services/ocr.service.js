@@ -12,6 +12,7 @@ export const extractTextFromImage = async (filePath) => {
     try {
         // 1. Prepare the Form Data (simulating a file upload form)
         const formData = new FormData();
+
         formData.append('apikey', OCR_API_URL); // Get key from .env
         formData.append('language', 'eng'); // English
         formData.append('isOverlayRequired', 'false');
